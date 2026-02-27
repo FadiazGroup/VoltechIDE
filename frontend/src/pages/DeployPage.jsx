@@ -330,19 +330,29 @@ export default function DeployPage() {
                   <p className="text-xs text-muted-foreground text-center py-4">No builds yet</p>
                 ) : (
                   builds.slice(0, 10).map((b) => (
-                    <div key={b.id} className="flex items-center justify-between px-4 py-2 border-b border-border/20 text-xs" data-testid={`build-row-${b.id}`}>
-                      <div>
-                        <span className="font-mono text-foreground">{b.project_name}</span>
-                        <span className="text-muted-foreground ml-2">v{b.version}</span>
+                    <div key={b.id} className="flex items-center justify-between px-4 py-2.5 border-b border-border/20 text-xs" data-testid={`build-row-${b.id}`}>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <span className="font-mono text-foreground">{b.project_name}</span>
+                          <span className="text-muted-foreground ml-2">v{b.version}</span>
+                        </div>
                       </div>
-                      <Badge variant="outline" className={`text-[10px] font-mono ${
-                        b.status === "success" ? "border-[#00ff9d]/50 text-[#00ff9d]" :
-                        b.status === "building" ? "border-primary/50 text-primary" :
-                        b.status === "queued" ? "border-[#ffb000]/50 text-[#ffb000]" :
-                        "border-[#ff3366]/50 text-[#ff3366]"
-                      }`}>
-                        {b.status}
-                      </Badge>
+                      <div className="flex items-center gap-3">
+                        {b.artifact_size > 0 && (
+                          <span className="font-mono text-[10px] text-muted-foreground">{(b.artifact_size / 1024).toFixed(1)} KB</span>
+                        )}
+                        {b.manifest && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#00ff9d]" title="Signed manifest" />
+                        )}
+                        <Badge variant="outline" className={`text-[10px] font-mono ${
+                          b.status === "success" ? "border-[#00ff9d]/50 text-[#00ff9d]" :
+                          b.status === "building" ? "border-primary/50 text-primary" :
+                          b.status === "queued" ? "border-[#ffb000]/50 text-[#ffb000]" :
+                          "border-[#ff3366]/50 text-[#ff3366]"
+                        }`}>
+                          {b.status}
+                        </Badge>
+                      </div>
                     </div>
                   ))
                 )}
