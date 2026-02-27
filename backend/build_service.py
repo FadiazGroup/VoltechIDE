@@ -25,6 +25,7 @@ ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 BUILD_TIMEOUT = 180  # seconds
 MAX_LOG_LINES = 500
+PIO_CMD = "/root/.venv/bin/pio"
 
 # PlatformIO board configs per board type
 BOARD_CONFIGS = {
@@ -167,7 +168,7 @@ async def real_build_process(build_id: str, project_files: list, board_type: str
         await add_log(f"Platform: espressif32 | Board: {BOARD_CONFIGS.get(board_type, BOARD_CONFIGS['ESP32-C3'])['board']}")
 
         process = await asyncio.create_subprocess_exec(
-            "pio", "run", "-e", env_name,
+            PIO_CMD, "run", "-e", env_name,
             cwd=build_dir,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
