@@ -31,7 +31,6 @@ Sistem "ESP32 Web IDE + Pin Config + OTA Firmware Deployment" berbasis website, 
 - [x] Device CRUD + claim flow with pairing codes
 - [x] ESP32-C3 pin configurator with 22 GPIO pins, validation engine
 - [x] Monaco code editor with project/file management
-- [x] Mock build service with real-time terminal log output
 - [x] OTA deployment with staged rollout (canary)
 - [x] Deployment pause/resume/rollback
 - [x] Telemetry dashboard with Recharts visualizations
@@ -39,19 +38,30 @@ Sistem "ESP32 Web IDE + Pin Config + OTA Firmware Deployment" berbasis website, 
 - [x] User management with RBAC (admin settings page)
 - [x] Dark cyber-industrial UI theme
 
+## What's Been Implemented (Phase 2 - Feb 2026)
+- [x] Real PlatformIO/ESP-IDF build service (replaces mock)
+- [x] ESP32-C3 firmware compilation via PlatformIO (espressif32 platform)
+- [x] Real firmware .bin artifact generation and storage
+- [x] SHA-256 hash computation for all artifacts
+- [x] RSA-2048 signed OTA manifests (private key signing + public key endpoint)
+- [x] OTA download endpoint serving real firmware binaries
+- [x] Build terminal shows real compilation output (compiling, linking, memory usage)
+- [x] Artifact info panel (version, size, SHA-256, memory stats, manifest status)
+- [x] Build timeout protection (180s max)
+- [x] Isolated temp directory per build with cleanup
+
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- Real PlatformIO/ESP-IDF build service in Docker sandbox
-- Signed OTA manifest (sha256 + digital signature)
-- Actual firmware binary artifact storage
+- ESP32 firmware agent state machine code
+- Dual OTA partition + rollback on health-check fail
+- AP provisioning with captive portal (ESP32 side)
 
 ### P1 (High)
-- ESP32 firmware agent state machine (BOOT -> WIFI_CONNECT -> AP_PORTAL -> IDLE -> OTA)
-- Dual OTA partition + rollback on health-check fail
 - Device heartbeat with WebSocket real-time updates
-- AP provisioning with captive portal (ESP32 side)
 - NVS encrypted Wi-Fi credential storage
+- Board profile engine (ESP32/ESP32-S3/C3) with per-board rules
+- Docker sandbox container isolation for builds
 
 ### P2 (Medium)
 - Board profile engine (ESP32/ESP32-S3/C3) with per-board rules
