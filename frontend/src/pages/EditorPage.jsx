@@ -125,6 +125,14 @@ export default function EditorPage() {
 
   const currentFile = selectedProject?.files?.[activeFile];
 
+  // Detect language from file extension
+  const getLanguage = (filename) => {
+    if (!filename) return "c";
+    const ext = filename.split(".").pop()?.toLowerCase();
+    const map = { c: "c", h: "c", cpp: "cpp", hpp: "cpp", py: "python", js: "javascript", json: "json", ini: "ini", cmake: "cmake", txt: "plaintext", cfg: "ini", md: "markdown" };
+    return map[ext] || "c";
+  };
+
   return (
     <div className="flex flex-col h-full" data-testid="editor-page">
       {/* Toolbar */}
