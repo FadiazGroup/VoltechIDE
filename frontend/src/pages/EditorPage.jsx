@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
-import { projectsAPI } from "../lib/api";
+import { projectsAPI, templatesAPI } from "../lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { Badge } from "../components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Plus, Save, FileCode2, Trash2, FolderOpen } from "lucide-react";
+import { Plus, Save, FileCode2, Trash2, FolderOpen, Wifi, Radio, Cpu } from "lucide-react";
 import { toast } from "sonner";
 
 export default function EditorPage() {
   const [projects, setProjects] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeFile, setActiveFile] = useState(0);
   const [showCreate, setShowCreate] = useState(false);
