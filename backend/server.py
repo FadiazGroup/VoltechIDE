@@ -18,11 +18,14 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
 
+from fastapi.responses import FileResponse
+
 from auth import (
     hash_password, verify_password, create_token,
     get_current_user, require_role
 )
 from pin_rules import validate_pin_config, get_board_profile
+from build_service import real_build_process, get_public_key_pem, ARTIFACTS_DIR
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -305,37 +308,18 @@ async def delete_project(project_id: str, user: dict = Depends(require_role("adm
     return {"message": "Project deleted"}
 
 # ─── BUILD ROUTES ───────────────────────────────────────────────────
-async def mock_build_process(build_id: str, project_id: str):
-    """Simulate a build process with realistic stages."""
-    stages = [
-        ("Initializing build environment...", 2),
-        ("Resolving dependencies...", 2),
-        ("Compiling source files...", 3),
-        ("Linking firmware binary...", 2),
-        ("Generating OTA image...", 1),
-        ("Computing SHA-256 hash...", 1),
-        ("Build complete!", 0),
-    ]
-    logs = []
-    for msg, delay in stages:
-        await asyncio.sleep(delay)
-        log_entry = f"[{now_iso()}] {msg}"
-        logs.append(log_entry)
-        await db.builds.update_one(
-            {"id": build_id},
-            {"$set": {"logs": logs, "status": "building"}}
-        )
-
-    artifact_hash = hashlib.sha256(f"{build_id}-{project_id}".encode()).hexdigest()
-    await db.builds.update_one(
-        {"id": build_id},
-        {"$set": {
-            "status": "success",
-            "logs": logs,
-            "artifact_hash": artifact_hash,
-            "artifact_size": random.randint(200000, 500000),
-            "completed_at": now_iso(),
-        }}
+async def _run_build(build_id: str, project_id: str, version: str, board_type: str):
+    """Background task: run real PlatformIO build."""
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        await db.builds.update_one({"id": build_id}, {"$set": {"status": "failed", "logs": ["Project not found"]}})
+        return
+    await real_build_process(
+        build_id=build_id,
+        project_files=project.get("files", []),
+        board_type=board_type,
+        version=version,
+        db=db,
     )
 
 @api_router.post("/builds")
@@ -344,22 +328,29 @@ async def trigger_build(req: BuildTrigger, background_tasks: BackgroundTasks, us
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     build_id = gen_id()
+    board_type = project.get("board_type", "ESP32-C3")
     build = {
         "id": build_id,
         "project_id": req.project_id,
         "project_name": project["name"],
+        "board_type": board_type,
         "owner_id": user["id"],
         "version": req.target_version,
         "status": "queued",
-        "logs": [f"[{now_iso()}] Build queued for {project['name']} v{req.target_version}"],
+        "logs": [f"[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] [INFO] Build queued for {project['name']} v{req.target_version} ({board_type})"],
         "artifact_hash": "",
         "artifact_size": 0,
+        "artifact_file": "",
+        "manifest_file": "",
+        "manifest": None,
+        "ram_usage": "",
+        "flash_usage": "",
         "started_at": now_iso(),
         "completed_at": None,
     }
     await db.builds.insert_one(build)
-    background_tasks.add_task(mock_build_process, build_id, req.project_id)
-    await audit_log(user["id"], user["email"], "trigger_build", "build", build_id, f"v{req.target_version}")
+    background_tasks.add_task(_run_build, build_id, req.project_id, req.target_version, board_type)
+    await audit_log(user["id"], user["email"], "trigger_build", "build", build_id, f"v{req.target_version} ({board_type})")
     result = {k: v for k, v in build.items() if k != "_id"}
     return result
 
