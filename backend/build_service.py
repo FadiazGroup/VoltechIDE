@@ -191,9 +191,12 @@ async def real_build_process(build_id: str, project_files: list, board_type: str
                         "SUCCESS", "FAILED", "Error", "error:", "warning:",
                         "Library", "LDF", "Scanning", "Found", "Checking",
                         "Retrieving", "esptool", "Creating", "Merged",
+                        "Missing", "PLATFORM:", "HARDWARE:", "PACKAGES:",
+                        "framework-espidf", "toolchain", "Processing",
+                        "tool-", "Generating", "partition", "fatal",
                     ]):
                         await add_log(decoded)
-                    elif decoded.startswith("[") or "%" in decoded:
+                    elif decoded.startswith("[") or "%" in decoded or decoded.startswith("="):
                         await add_log(decoded)
         except asyncio.TimeoutError:
             process.kill()
