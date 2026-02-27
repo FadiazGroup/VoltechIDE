@@ -50,10 +50,15 @@ export default function EditorPage() {
   const handleCreateProject = async (e) => {
     e.preventDefault();
     try {
-      const res = await projectsAPI.create({ name: newProjectName, board_type: "ESP32-C3" });
+      const res = await projectsAPI.create({
+        name: newProjectName,
+        board_type: "ESP32-C3",
+        template: selectedTemplate,
+      });
       toast.success("Project created");
       setShowCreate(false);
       setNewProjectName("");
+      setSelectedTemplate("blank");
       await loadProjects();
       setSelectedProject(res.data);
       setActiveFile(0);
