@@ -177,19 +177,73 @@ export default function DeployPage() {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div ref={terminalRef} className="h-56 overflow-y-auto px-3 pb-3 terminal-text" data-testid="terminal-output">
+              <div ref={terminalRef} className="h-72 overflow-y-auto px-3 pb-3 terminal-text" data-testid="terminal-output">
                 {buildLogs.length === 0 ? (
                   <p className="text-muted-foreground/50 py-4">$ waiting for build...</p>
                 ) : (
-                  buildLogs.map((log, i) => (
-                    <div key={i} className="text-[#00ff9d]/80">
-                      <span className="text-muted-foreground/50">$</span> {log}
-                    </div>
-                  ))
+                  buildLogs.map((log, i) => {
+                    const isError = log.includes("[ERROR]") || log.includes("error:") || log.includes("FAILED");
+                    const isWarning = log.includes("warning:") || log.includes("Warning");
+                    const isSuccess = log.includes("SUCCESS") || log.includes("BUILD SUCCESSFUL");
+                    return (
+                      <div key={i} className={`${
+                        isError ? "text-[#ff3366]" : isWarning ? "text-[#ffb000]" : isSuccess ? "text-[#00ff9d] font-bold" : "text-[#00ff9d]/80"
+                      }`}>
+                        <span className="text-muted-foreground/50">$</span> {log}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </CardContent>
           </Card>
+
+          {/* Build Artifact Info */}
+          {activeBuild && activeBuild.status === "success" && (
+            <Card className="bg-[#121212] border-[#00ff9d]/20" data-testid="build-artifact-info">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Package className="w-4 h-4 text-[#00ff9d]" strokeWidth={1.5} />
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#00ff9d]">Build Artifact</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Version</p>
+                    <p className="font-mono text-primary">v{activeBuild.version}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Size</p>
+                    <p className="font-mono">{activeBuild.artifact_size ? `${(activeBuild.artifact_size / 1024).toFixed(1)} KB` : "–"}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-muted-foreground mb-0.5">SHA-256</p>
+                    <p className="font-mono text-[10px] break-all text-muted-foreground">{activeBuild.artifact_hash || "–"}</p>
+                  </div>
+                  {activeBuild.ram_usage && (
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground mb-0.5">Memory</p>
+                      <p className="font-mono text-[10px]">{activeBuild.ram_usage}</p>
+                    </div>
+                  )}
+                  {activeBuild.flash_usage && (
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground mb-0.5">Flash</p>
+                      <p className="font-mono text-[10px]">{activeBuild.flash_usage}</p>
+                    </div>
+                  )}
+                  {activeBuild.manifest && (
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground mb-0.5">OTA Manifest</p>
+                      <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#00ff9d]" />
+                        <span className="font-mono text-[10px] text-[#00ff9d]">Signed (RSA-2048 + SHA-256)</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Deploy Section */}
