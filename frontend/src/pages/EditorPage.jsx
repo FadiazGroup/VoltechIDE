@@ -19,10 +19,14 @@ export default function EditorPage() {
   const [activeFile, setActiveFile] = useState(0);
   const [showCreate, setShowCreate] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("blank");
   const [saving, setSaving] = useState(false);
   const editorRef = useRef(null);
 
-  useEffect(() => { loadProjects(); }, []);
+  useEffect(() => {
+    loadProjects();
+    templatesAPI.list().then((r) => setTemplates(r.data)).catch(() => {});
+  }, []);
 
   const loadProjects = async () => {
     try {
