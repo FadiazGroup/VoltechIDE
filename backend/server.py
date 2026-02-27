@@ -468,11 +468,44 @@ async def ota_check_update(req: OTACheckRequest):
 
 @api_router.get("/ota/download/{deploy_id}")
 async def ota_download(deploy_id: str):
-    """Device downloads firmware artifact here."""
+    """Device downloads firmware binary here."""
     deploy = await db.deployments.find_one({"id": deploy_id}, {"_id": 0})
     if not deploy:
         raise HTTPException(status_code=404, detail="Deployment not found")
-    return {"message": "Firmware binary would be served here", "artifact_hash": deploy.get("artifact_hash", ""), "version": deploy["version"]}
+    build = await db.builds.find_one({"id": deploy.get("build_id", "")}, {"_id": 0})
+    if not build:
+        raise HTTPException(status_code=404, detail="Build not found")
+    artifact_file = build.get("artifact_file", "")
+    if not artifact_file:
+        raise HTTPException(status_code=404, detail="No firmware artifact available")
+    artifact_path = ARTIFACTS_DIR / artifact_file
+    if not artifact_path.exists():
+        raise HTTPException(status_code=404, detail="Artifact file not found on disk")
+    return FileResponse(
+        str(artifact_path),
+        media_type="application/octet-stream",
+        filename=f"firmware_v{deploy.get('version', 'unknown')}.bin",
+        headers={"X-Artifact-Hash": build.get("artifact_hash", "")},
+    )
+
+@api_router.get("/ota/manifest/{build_id}")
+async def ota_manifest(build_id: str):
+    """Get signed OTA manifest for a build."""
+    build = await db.builds.find_one({"id": build_id}, {"_id": 0})
+    if not build:
+        raise HTTPException(status_code=404, detail="Build not found")
+    manifest = build.get("manifest")
+    if not manifest:
+        raise HTTPException(status_code=404, detail="No manifest available for this build")
+    return manifest
+
+@api_router.get("/ota/public-key")
+async def ota_public_key():
+    """Return the OTA signing public key for ESP32 verification."""
+    pem = get_public_key_pem()
+    if not pem:
+        raise HTTPException(status_code=404, detail="Public key not configured")
+    return {"public_key_pem": pem}
 
 @api_router.post("/ota/report")
 async def ota_report_status(device_id: str, status: str, version: str = ""):
