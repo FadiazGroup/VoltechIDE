@@ -60,7 +60,6 @@ platform = {config['platform']}
 board = {config['board']}
 framework = {config['framework']}
 monitor_speed = {config['monitor_speed']}
-board_build.partitions = default.csv
 """
     return ini
 
