@@ -152,7 +152,7 @@ export default function EditorPage() {
                 <Plus className="w-3.5 h-3.5 mr-1" />New
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#121212] border-border/50">
+            <DialogContent className="bg-[#121212] border-border/50 max-w-lg">
               <DialogHeader>
                 <DialogTitle>New Project</DialogTitle>
               </DialogHeader>
@@ -167,6 +167,54 @@ export default function EditorPage() {
                     className="bg-transparent border-border/50 rounded-sm font-mono"
                     required
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">Template</Label>
+                  <div className="grid grid-cols-1 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTemplate("blank")}
+                      data-testid="template-blank"
+                      className={`text-left p-3 rounded-sm border transition-all ${
+                        selectedTemplate === "blank"
+                          ? "border-primary/50 bg-primary/5"
+                          : "border-border/30 hover:border-border/60"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileCode2 className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                        <span className="text-sm font-medium">Blank Project</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">Empty ESP-IDF project with minimal app_main()</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTemplate("fleet_agent")}
+                      data-testid="template-fleet-agent"
+                      className={`text-left p-3 rounded-sm border transition-all ${
+                        selectedTemplate === "fleet_agent"
+                          ? "border-[#00ff9d]/50 bg-[#00ff9d]/5"
+                          : "border-border/30 hover:border-border/60"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Radio className="w-4 h-4 text-[#00ff9d]" strokeWidth={1.5} />
+                        <span className="text-sm font-medium">Fleet Agent</span>
+                        <Badge variant="outline" className="text-[9px] font-mono border-[#00ff9d]/30 text-[#00ff9d]">
+                          Full Stack
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Complete fleet agent with Wi-Fi provisioning, AP captive portal, OTA updates with SHA-256 verification, dual-partition rollback, and telemetry heartbeat
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="text-[9px] font-mono text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded-sm">Wi-Fi + AP</span>
+                        <span className="text-[9px] font-mono text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded-sm">OTA</span>
+                        <span className="text-[9px] font-mono text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded-sm">Telemetry</span>
+                        <span className="text-[9px] font-mono text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded-sm">7 files</span>
+                      </div>
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" data-testid="create-project-submit-btn" className="w-full rounded-sm bg-primary/10 border border-primary/50 text-primary font-mono uppercase text-xs">
                   Create Project
