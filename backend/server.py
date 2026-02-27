@@ -61,6 +61,7 @@ class PinConfigUpdate(BaseModel):
 class ProjectCreate(BaseModel):
     name: str
     board_type: str = "ESP32-C3"
+    template: Optional[str] = None  # "blank", "fleet_agent"
 
 class ProjectFileUpdate(BaseModel):
     files: List[Dict[str, str]]  # [{"name": "main.c", "content": "..."}]
