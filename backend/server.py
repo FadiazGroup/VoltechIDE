@@ -1,14 +1,18 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, BackgroundTasks
 from dotenv import load_dotenv
+from pathlib import Path
+import os
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, BackgroundTasks
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
 import logging
 import asyncio
 import hashlib
 import random
 import string
-from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
@@ -19,9 +23,6 @@ from auth import (
     get_current_user, require_role
 )
 from pin_rules import validate_pin_config, get_board_profile
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
