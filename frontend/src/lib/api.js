@@ -60,6 +60,12 @@ export const projectsAPI = {
   delete: (id) => api.delete(`/projects/${id}`),
 };
 
+// Templates
+export const templatesAPI = {
+  list: () => api.get("/templates"),
+  get: (id) => api.get(`/templates/${id}`),
+};
+
 // Builds
 export const buildsAPI = {
   trigger: (data) => api.post("/builds", data),
