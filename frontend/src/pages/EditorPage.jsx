@@ -295,7 +295,7 @@ export default function EditorPage() {
           <div className="flex-1 min-h-0">
             <Editor
               height="100%"
-              language="c"
+              language={getLanguage(currentFile?.name)}
               theme="vs-dark"
               value={currentFile?.content || ""}
               onChange={handleEditorChange}
