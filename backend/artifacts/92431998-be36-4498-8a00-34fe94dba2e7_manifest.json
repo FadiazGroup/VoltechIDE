@@ -1,0 +1,10 @@
+{
+  "build_id": "92431998-be36-4498-8a00-34fe94dba2e7",
+  "version": "1.0.0",
+  "board_type": "ESP32-C3",
+  "artifact_file": "92431998-be36-4498-8a00-34fe94dba2e7.bin",
+  "artifact_size": 166432,
+  "artifact_hash_sha256": "4ea3ee1c7876f99e9086818c789502a0de44e7cb99f5de03fb3d358c84125a86",
+  "built_at": "2026-02-27T09:27:51.484741+00:00",
+  "signature": "gdSM+USvMXPNtn6ygfDJICaKXLy7/a1ltgr5wSXLwoZA1Ld38KU9l0vyg4FlZS/G3zIfNhfrml6/f59sPZR3krJY4Rl6FYTM12fzxtzscZANwHivDq/VsI77k7k+GXMWuleyRBIuMLVS7yQdYTJaUddLDzZFRnLPWnwMJRl5YiIrU/b00e2TNYoFSPhku4mtblVStKbRXVeOItHxmm+a86OJM+praeiCAy6EmTPQ5DUk1P/+7XRb4+XMhQAq3eKlnR93aVWuwvIgUBUKJg/dqs4MvX4qnyiEOX0MUq8HQbYCHGnHK17Gmd6TTDI7DAWe42hmekMW/XxiDHePS11lzg=="
+}
