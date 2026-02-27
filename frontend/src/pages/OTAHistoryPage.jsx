@@ -123,6 +123,11 @@ export default function OTAHistoryPage() {
                           <span>{deviceCount} device{deviceCount !== 1 ? "s" : ""}</span>
                           <span>Rollout: {deploy.rollout_percent}%</span>
                           {successCount > 0 && <span className="text-[#00ff9d]">{successCount} applied</span>}
+                          {deploy.artifact_hash && (
+                            <span className="font-mono text-[10px]" title={deploy.artifact_hash}>
+                              SHA: {deploy.artifact_hash.substring(0, 12)}...
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
