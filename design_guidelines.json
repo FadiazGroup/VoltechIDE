@@ -1,0 +1,151 @@
+{
+  "project_name": "ESP32_Web_IDE_Fleet_Manager",
+  "design_philosophy": {
+    "theme_mode": "dark",
+    "aesthetic": "Retro-Futurism meets Swiss High-Contrast",
+    "core_principles": [
+      "Density is Data: No wasted pixels.",
+      "Visible Systems: Show the grid, show the skeleton.",
+      "Input Precision: Controls must feel tactile and mechanical.",
+      "Cyber-Industrial: Dark backgrounds, neon functional accents."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "family": "Space Grotesk, sans-serif",
+      "weights": [600, 700],
+      "usage": "Page titles, Section headers, Hero text",
+      "letter_spacing": "tracking-tight"
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "weights": [400, 500],
+      "usage": "General UI text, labels, descriptions"
+    },
+    "code": {
+      "family": "JetBrains Mono, monospace",
+      "weights": [400],
+      "usage": "Code editor, Terminal, Pin names, MAC addresses, Hash IDs"
+    }
+  },
+  "colors": {
+    "background": {
+      "app_bg": "#09090b",
+      "panel_bg": "#0c0a09",
+      "card_bg": "#121212",
+      "terminal_bg": "#050505"
+    },
+    "borders": {
+      "subtle": "#27272a",
+      "active": "#3f3f46",
+      "highlight": "#00f0ff"
+    },
+    "accents": {
+      "primary": "#00f0ff",
+      "primary_dim": "rgba(0, 240, 255, 0.1)",
+      "success": "#00ff9d",
+      "warning": "#ffb000",
+      "error": "#ff3366",
+      "offline": "#52525b"
+    },
+    "text": {
+      "primary": "#ededed",
+      "secondary": "#a1a1aa",
+      "muted": "#52525b",
+      "code": "#00ff9d"
+    }
+  },
+  "visual_enhancers": {
+    "grid_background": "background-image: linear-gradient(to right, #27272a 1px, transparent 1px), linear-gradient(to bottom, #27272a 1px, transparent 1px); background-size: 40px 40px; mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);",
+    "scanlines": "background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%;",
+    "glass_panel": "background: rgba(18, 18, 18, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08);"
+  },
+  "layout_strategies": {
+    "dashboard_grid": {
+      "type": "bento_dense",
+      "classes": "grid grid-cols-1 md:grid-cols-12 gap-4 p-4",
+      "rules": "Maximize screen usage. No large white/black spaces."
+    },
+    "pin_configurator": {
+      "layout": "Two-pane split. Left: Visual Chip (Canvas/SVG). Right: Configuration Panel (Form).",
+      "interaction": "Click pin -> Open Popover -> Select Function."
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "sharp_edges",
+      "classes": "rounded-none border border-primary/50 bg-primary/10 hover:bg-primary/20 text-primary font-mono uppercase tracking-widest text-xs h-9 px-4 transition-all"
+    },
+    "cards": {
+      "style": "technical_panel",
+      "classes": "rounded-sm border border-border bg-card/50 backdrop-blur-sm"
+    },
+    "inputs": {
+      "style": "terminal_input",
+      "classes": "rounded-none border-b border-border bg-transparent focus:border-primary focus:ring-0 font-mono"
+    },
+    "status_indicators": {
+      "online": "w-2 h-2 bg-success rounded-full shadow-[0_0_8px_#00ff9d]",
+      "offline": "w-2 h-2 bg-muted rounded-full",
+      "busy": "w-2 h-2 bg-warning animate-pulse"
+    }
+  },
+  "component_instructions": {
+    "pin_visualizer": {
+      "type": "custom_svg",
+      "description": "Render a QFN32 package (square, 8 pins per side). Pins must be interactive buttons.",
+      "pin_states": {
+        "unassigned": "fill-muted stroke-muted-foreground",
+        "power": "fill-warning stroke-warning-foreground",
+        "assigned": "fill-primary stroke-primary-foreground",
+        "conflict": "fill-error stroke-error-foreground"
+      }
+    },
+    "code_editor": {
+      "library": "@monaco-editor/react",
+      "theme": "vs-dark",
+      "options": "minimap: { enabled: false }, fontSize: 13, fontFamily: 'JetBrains Mono'"
+    },
+    "terminal": {
+      "style": "bg-terminal-bg border-t border-border p-2 font-mono text-xs text-green-400 overflow-y-auto h-48",
+      "content": "Must look like a real shell. Use 'xterm' library or simple scrollable div with typed-out effect."
+    }
+  },
+  "assets": {
+    "fonts": {
+      "google_fonts_import": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@600;700&display=swap"
+    },
+    "images": {
+      "login_hero": "https://images.unsplash.com/photo-1743862558369-5dcea79ccbff?auto=format&fit=crop&q=80",
+      "dashboard_bg_texture": "https://images.unsplash.com/photo-1767481626833-dff05d7ab1bc?auto=format&fit=crop&q=80",
+      "hardware_placeholder": "https://images.unsplash.com/photo-1749814252321-e9a275a5ee80?auto=format&fit=crop&q=80"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "preferred_style": "stroke-width={1.5}"
+    }
+  },
+  "universal_guidelines": [
+    "DO NOT use generic gradients. Use flat, deep colors or subtle noise textures.",
+    "DO NOT center text unless it is a hero title.",
+    "ALL interactive elements must have hover states (brightness-125 or border-color change).",
+    "Use 'JetBrains Mono' for all data values (IPs, MACs, Pin Numbers).",
+    "Toasts must use 'sonner' (dark theme).",
+    "Charts must use 'recharts' with the custom cyber-palette."
+  ],
+  "instructions_to_main_agent": {
+    "setup": [
+      "Install 'lucide-react', 'recharts', 'sonner', '@monaco-editor/react', 'clsx', 'tailwind-merge' if not present.",
+      "Update tailwind.config.js to include the new colors and font families.",
+      "Import the Google Fonts in index.css."
+    ],
+    "implementation_order": [
+      "1. Setup Base Styles (Fonts, Global CSS variables for colors).",
+      "2. Create Layout Shell (Sidebar, Header, Main Content Area).",
+      "3. Build Dashboard Overview (Device Fleet Grid).",
+      "4. Build Pin Configurator (Complex Interaction).",
+      "5. Build Code Editor & Terminal.",
+      "6. Implement OTA & Settings."
+    ]
+  }
+}
