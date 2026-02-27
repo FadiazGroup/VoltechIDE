@@ -245,6 +245,51 @@ async def update_pin_config(device_id: str, req: PinConfigUpdate, user: dict = D
 async def validate_pins(req: PinConfigUpdate, user: dict = Depends(get_current_user)):
     return validate_pin_config(req.pins)
 
+# ─── TEMPLATE ROUTES ────────────────────────────────────────────────
+TEMPLATES_DIR = ROOT_DIR / "firmware_templates"
+
+def _load_template_files(template_name: str) -> list:
+    """Load all source files from a firmware template directory."""
+    tpl_dir = TEMPLATES_DIR / template_name
+    if not tpl_dir.exists():
+        return []
+    files = []
+    for fp in sorted(tpl_dir.iterdir()):
+        if fp.is_file() and fp.suffix in ('.c', '.h', '.ini', '.txt', '.cmake', '.cfg'):
+            files.append({"name": fp.name, "content": fp.read_text()})
+    return files
+
+@api_router.get("/templates")
+async def list_templates():
+    """List available project templates."""
+    templates = [
+        {
+            "id": "blank",
+            "name": "Blank Project",
+            "description": "Empty ESP-IDF project with a minimal app_main()",
+            "files_count": 1,
+        },
+        {
+            "id": "fleet_agent",
+            "name": "Fleet Agent (Full)",
+            "description": "Complete fleet agent with Wi-Fi provisioning, AP captive portal, OTA updates, telemetry heartbeat, and device claim flow",
+            "files_count": len(_load_template_files("esp32c3_fleet_agent")),
+        },
+    ]
+    return templates
+
+@api_router.get("/templates/{template_id}")
+async def get_template(template_id: str):
+    """Get template files preview."""
+    if template_id == "blank":
+        return {"id": "blank", "files": [{"name": "main.c", "content": "// Blank ESP-IDF project\n"}]}
+    elif template_id == "fleet_agent":
+        files = _load_template_files("esp32c3_fleet_agent")
+        if not files:
+            raise HTTPException(status_code=404, detail="Template files not found")
+        return {"id": "fleet_agent", "files": files}
+    raise HTTPException(status_code=404, detail="Template not found")
+
 # ─── PROJECT ROUTES ─────────────────────────────────────────────────
 @api_router.get("/projects")
 async def list_projects(user: dict = Depends(get_current_user)):
@@ -255,7 +300,15 @@ async def list_projects(user: dict = Depends(get_current_user)):
 @api_router.post("/projects")
 async def create_project(req: ProjectCreate, user: dict = Depends(require_role("admin", "developer"))):
     project_id = gen_id()
-    default_main = '''#include <stdio.h>
+
+    # Load files based on template selection
+    if req.template == "fleet_agent":
+        files = _load_template_files("esp32c3_fleet_agent")
+        if not files:
+            files = [{"name": "main.c", "content": "// Template not found\n"}]
+    else:
+        # Default blank template
+        default_main = '''#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -272,17 +325,20 @@ void app_main(void)
     }
 }
 '''
+        files = [{"name": "main.c", "content": default_main}]
+
     project = {
         "id": project_id,
         "name": req.name,
         "board_type": req.board_type,
         "owner_id": user["id"],
-        "files": [{"name": "main.c", "content": default_main}],
+        "template": req.template or "blank",
+        "files": files,
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
     await db.projects.insert_one(project)
-    await audit_log(user["id"], user["email"], "create_project", "project", project_id)
+    await audit_log(user["id"], user["email"], "create_project", "project", project_id, f"Template: {req.template or 'blank'}")
     result = {k: v for k, v in project.items() if k != "_id"}
     return result
 
